@@ -28,14 +28,14 @@ allprojects {
 android {
     signingConfigs {
         debug {
-            storeFile file('E:\\lexuncomm\\lexuncomm\\keystoreLexunCompany.jks')
+            storeFile file('../keystoreLexunCompany.jks')
             storePassword 'tdr123456'
             keyAlias = 'key0'
             keyPassword 'tdr123456'
         }
 
         release {
-            storeFile file('E:\\lexuncomm\\lexuncomm\\keystoreLexunCompany.jks')
+            storeFile file('../keystoreLexunCompany.jks')
             storePassword 'tdr123456'
             keyAlias = 'key0'
             keyPassword 'tdr123456'
