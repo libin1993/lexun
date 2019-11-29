@@ -1,9 +1,12 @@
 package io.cordova.lexuncompany.view;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.os.Vibrator;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -12,22 +15,26 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import com.luck.picture.lib.PictureSelector;
+import com.luck.picture.lib.config.PictureConfig;
+import com.luck.picture.lib.config.PictureMimeType;
+
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.bertsir.zbar.CameraPreview;
+import cn.bertsir.zbar.Qr.ScanResult;
 import cn.bertsir.zbar.Qr.Symbol;
 import cn.bertsir.zbar.QrConfig;
 import cn.bertsir.zbar.ScanCallback;
 import cn.bertsir.zbar.utils.QRUtils;
 import cn.bertsir.zbar.view.ScanView;
-import cn.bingoogolapple.photopicker.activity.BGAPhotoPickerActivity;
-import cn.bingoogolapple.qrcode.core.QRCodeView;
+
 import io.cordova.lexuncompany.R;
 import io.cordova.lexuncompany.inter.QrCodeScanInter;
-import io.cordova.lexuncompany.units.ToastUtils;
+import io.cordova.lexuncompany.units.ViewUnits;
 
 
 /**
@@ -35,7 +42,7 @@ import io.cordova.lexuncompany.units.ToastUtils;
  * Email：1993911441@qq.com
  * Describe：
  */
-public class ScanQRCodeActivity extends BaseActivity implements QRCodeView.Delegate {
+public class ScanQRCodeActivity extends BaseActivity {
     @BindView(R.id.cp_scan)
     CameraPreview cpScan;
     @BindView(R.id.scan_view)
@@ -47,10 +54,10 @@ public class ScanQRCodeActivity extends BaseActivity implements QRCodeView.Deleg
     @BindView(R.id.cb_flash_light)
     CheckBox cbFlashLight;
 
-    private static final int REQUEST_CODE_CHOOSE_QRCODE_FROM_GALLERY = 666;
 
     private static QrCodeScanInter mQrCodeScanInter;  //在AndroidForJSUnits中使用
     private String mCallBack;
+    private String scanResult;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -59,6 +66,7 @@ public class ScanQRCodeActivity extends BaseActivity implements QRCodeView.Deleg
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         Symbol.is_only_scan_center = true;
         Symbol.scanType =  QrConfig.TYPE_QRCODE;
+        Symbol.doubleEngine = true;
         setContentView(R.layout.activity_scan_qrcode);
         ButterKnife.bind(this);
         init();
@@ -66,7 +74,6 @@ public class ScanQRCodeActivity extends BaseActivity implements QRCodeView.Deleg
 
     private void init() {
         mCallBack = super.getIntent().getStringExtra("callBack");
-        scanView.startScan();
         cbFlashLight.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -83,13 +90,11 @@ public class ScanQRCodeActivity extends BaseActivity implements QRCodeView.Deleg
                 finish();
                 break;
             case R.id.tv_select_photo:
-                Intent photoPickerIntent = new BGAPhotoPickerActivity.IntentBuilder(this)
-                        .cameraFileDir(null)
-                        .maxChooseCount(1)
-                        .selectedPhotos(null)
-                        .pauseOnScroll(false)
-                        .build();
-                startActivityForResult(photoPickerIntent, REQUEST_CODE_CHOOSE_QRCODE_FROM_GALLERY);
+                PictureSelector.create(this)
+                        .openGallery(PictureMimeType.ofImage())
+                        .selectionMode(PictureConfig.SINGLE)
+                        .isCamera(false)
+                        .forResult(PictureConfig.CHOOSE_REQUEST);//结果回调onActivityResult code
                 break;
         }
     }
@@ -101,15 +106,16 @@ public class ScanQRCodeActivity extends BaseActivity implements QRCodeView.Deleg
             cpScan.setScanCallback(resultCallback);
             cpScan.start();
         }
-        scanView.onResume();
+
     }
 
 
     private ScanCallback resultCallback = new ScanCallback() {
         @Override
-        public void onScanResult(String result) {
-            scanResult(result);
+        public void onScanResult(ScanResult result) {
+            scanResult(result.getContent());
         }
+
     };
 
 
@@ -171,80 +177,71 @@ public class ScanQRCodeActivity extends BaseActivity implements QRCodeView.Deleg
         vibrator.vibrate(200);
     }
 
-    @Override
-    public void onScanQRCodeSuccess(String result) {
-        vibrate();
-        Intent intent = new Intent();
-        intent.putExtra("result", result);
-        this.setResult(RESULT_OK, intent);
-        //如果QrCodeScan不为空，这执行相关回调，同时销毁对象，防止内存堆积
-        if (mQrCodeScanInter != null && !TextUtils.isEmpty(result)) {
-            mQrCodeScanInter.getQrCodeScanResult(mCallBack, result);
-            mQrCodeScanInter = null;
-        }
-        finish();
-    }
 
-    @Override
-    public void onCameraAmbientBrightnessChanged(boolean isDark) {
-        // 这里是通过修改提示文案来展示环境是否过暗的状态，接入方也可以根据 isDark 的值来实现其他交互效果
-        if (isDark) {
-            cbFlashLight.setChecked(true);
-        }
-    }
+    @SuppressLint("HandlerLeak")
+    private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case 1:
+                    scanResult(scanResult);
+                    break;
+                case 2:
+                    ViewUnits.getInstance().showToast("识别失败！");
+                    finish();
+                    break;
+            }
 
-    @Override
-    public void onScanQRCodeOpenCameraError() {
-    }
+
+        }
+    };
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        if (resultCode == Activity.RESULT_OK && requestCode == PictureConfig.CHOOSE_REQUEST) {
+            String imagePath = PictureSelector.obtainMultipleResult(data).get(0).getPath();
 
-        if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE_CHOOSE_QRCODE_FROM_GALLERY) {
-            String imagePath = BGAPhotoPickerActivity.getSelectedPhotos(data).get(0);
+            if (TextUtils.isEmpty(imagePath)) {
+                ViewUnits.getInstance().showToast("获取图片失败！");
+                return;
+            }
+
             new Thread(new Runnable() {
                 @Override
                 public void run() {
                     try {
-                        if (TextUtils.isEmpty(imagePath)) {
-                            Toast.makeText(getApplicationContext(), "获取图片失败！", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
                         //优先使用zbar识别一次二维码
-                         String qrcontent = QRUtils.getInstance().decodeQRcode(imagePath);
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (!TextUtils.isEmpty(qrcontent)) {
-                                    scanResult(qrcontent);
-                                } else {
-                                    //尝试用zxing再试一次识别二维码
-                                     String qrCode = QRUtils.getInstance().decodeQRcodeByZxing(imagePath);
-                                    if (!TextUtils.isEmpty(qrCode)) {
-                                        scanResult(qrCode);
+                        String qrContent = QRUtils.getInstance().decodeQRcode(imagePath);
+                        if (!TextUtils.isEmpty(qrContent)) {
+                            scanResult = qrContent;
+                            handler.sendEmptyMessage(1);
+                        } else {
+                            //尝试用zxing再试一次识别二维码
+                            String qrCode = QRUtils.getInstance().decodeQRcodeByZxing(imagePath);
+                            if (!TextUtils.isEmpty(qrCode)) {
+                                scanResult = qrCode;
+                                handler.sendEmptyMessage(1);
+                            } else {
+                                //再试试是不是条形码
+                                try {
+                                    String barCode = QRUtils.getInstance().decodeBarcode(imagePath);
+                                    if (!TextUtils.isEmpty(barCode)) {
+                                        scanResult = barCode;
+                                        handler.sendEmptyMessage(1);
                                     } else {
-                                        //再试试是不是条形码
-                                        try {
-                                            String barCode = QRUtils.getInstance().decodeBarcode(imagePath);
-                                            if (!TextUtils.isEmpty(barCode)) {
-                                                scanResult(barCode);
-                                            } else {
-                                                ToastUtils.showToast(getApplicationContext(), "识别失败！");
-                                            }
-                                        } catch (Exception e) {
-                                            ToastUtils.showToast(getApplicationContext(), "识别异常！");
-                                            e.printStackTrace();
-                                        }
-
+                                        handler.sendEmptyMessage(2);
                                     }
-
+                                } catch (Exception e) {
+                                    handler.sendEmptyMessage(2);
+                                    e.printStackTrace();
                                 }
                             }
-                        });
+
+                        }
                     } catch (Exception e) {
-                        ToastUtils.showToast(getApplicationContext(), "识别异常！");
+                        handler.sendEmptyMessage(2);
                     }
                 }
             }).start();

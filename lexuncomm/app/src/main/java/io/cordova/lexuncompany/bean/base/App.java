@@ -27,6 +27,11 @@ public class App {
             Manifest.permission.CAMERA
     };
 
+    public static final String[] pictureSelect = new String[]{
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.CAMERA
+    };
+
     /**
      * 缓存数据库
      */
@@ -43,10 +48,9 @@ public class App {
     public static class LexunCard {
 //                public static final String CardUrl="http://122.114.207.137:6163/"; //乐巡生产环境下CardUrl
 
+        public static final String CardUrl = "http://183.129.130.119:12010/"; //研发环境外网
 
-//        public static final String CardUrl = "http://183.129.130.119:12010/"; //研发环境外网
-
-        public static final String CardUrl = "http://183.129.130.119:13131/"; //测试环境外网
+//        public static final String CardUrl = "http://183.129.130.119:13131/"; //测试环境外网
 
 
         //        public static final String CardUrl = "http://10.130.0.207:8010/#/"; //测试环境内网

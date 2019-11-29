@@ -1,7 +1,6 @@
 package io.cordova.lexuncompany.view;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -9,19 +8,16 @@ import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.ClipboardManager;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
@@ -34,29 +30,25 @@ import android.webkit.GeolocationPermissions;
 import android.webkit.JavascriptInterface;
 import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
-import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import com.jph.takephoto.compress.CompressImage;
-import com.jph.takephoto.compress.CompressImageImpl;
-import com.jph.takephoto.model.TImage;
-import com.jph.takephoto.model.TResult;
+
+import com.luck.picture.lib.PictureSelector;
+import com.luck.picture.lib.config.PictureConfig;
+import com.luck.picture.lib.config.PictureMimeType;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Random;
-
 import cn.jpush.android.api.JPushInterface;
 import io.cordova.lexuncompany.R;
 import io.cordova.lexuncompany.amap.LocationService;
 import io.cordova.lexuncompany.amap.LocationStatusManager;
 import io.cordova.lexuncompany.amap.Utils;
-import io.cordova.lexuncompany.application.MyApplication;
 import io.cordova.lexuncompany.bean.IDCardBean;
 import io.cordova.lexuncompany.bean.base.App;
 import io.cordova.lexuncompany.bean.base.Request;
@@ -71,7 +63,7 @@ import io.cordova.lexuncompany.units.BaseUnits;
 import io.cordova.lexuncompany.units.ConfigUnits;
 import io.cordova.lexuncompany.units.FormatUtils;
 import io.cordova.lexuncompany.units.ImageUtils;
-import io.cordova.lexuncompany.units.PhotoUntils;
+import io.cordova.lexuncompany.units.PermissionUtils;
 import io.cordova.lexuncompany.units.ViewUnits;
 
 import static io.cordova.lexuncompany.bean.base.Request.Permissions.REQUEST_ALL_PERMISSIONS;
@@ -82,7 +74,7 @@ import static io.cordova.lexuncompany.bean.base.Request.Permissions.REQUEST_ALL_
  * Created by JasonYao on 2018/4/3.
  */
 
-public class CardContentActivity extends BaseTakePhotoActivity implements AndroidToJSCallBack {
+public class CardContentActivity extends BaseActivity implements AndroidToJSCallBack {
     private static final String TAG = "libin";
     private static CardContentActivity mInstance;
     private ActivityCardContentBinding mBinding;
@@ -222,7 +214,7 @@ public class CardContentActivity extends BaseTakePhotoActivity implements Androi
         } else {
             notification = new NotificationCompat.Builder(this)
                     .setContentTitle(getString(R.string.app_name))
-                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setSmallIcon(R.mipmap.logo)
                     .setOngoing(true)
                     .setVibrate(new long[]{0})
                     .setSound(null)
@@ -428,27 +420,66 @@ public class CardContentActivity extends BaseTakePhotoActivity implements Androi
      */
     public void takePhoto(GetImageListener listener) {
         mListener = listener;
-        showTakePicDialog(new TakePicOnClick() {
-            @Override
-            public void choosePhotoOnClick() {
-                getTakePhoto().onPickFromGalleryWithCrop(PhotoUntils.getInstance().createImageFileUri(), PhotoUntils.getInstance().getCropOptions());
-            }
-
-            @Override
-            public void takePictureOnClick() {
-                getTakePhoto().onPickFromCaptureWithCrop(PhotoUntils.getInstance().createImageFileUri(), PhotoUntils.getInstance().getCropOptions());
-            }
-        });
+        if (PermissionUtils.getInstance().hasPermission(this, App.pictureSelect)) {
+            PictureSelector.create(this)
+                    .openGallery(PictureMimeType.ofImage())
+                    .selectionMode(PictureConfig.SINGLE)
+                    .isCamera(true)
+                    .enableCrop(true)// 是否裁剪 true or false
+                    .compress(true)// 是否压缩 true or false
+                    .previewImage(false)
+                    .withAspectRatio(1, 1)// int 裁剪比例 如16:9 3:2 3:4 1:1 可自定义
+                    .freeStyleCropEnabled(true)// 裁剪框是否可拖拽 true or false
+                    .circleDimmedLayer(false)// 是否圆形裁剪 true or false
+                    .showCropGrid(false)
+                    .minimumCompressSize(100)// 小于100kb的图片不压缩
+                    .scaleEnabled(true)// 裁剪是否可放大缩小图片 true or false
+                    .isDragFrame(true)// 是否可拖动裁剪框(固定)
+                    .forResult(PictureConfig.CHOOSE_REQUEST);//结果回调onActivityResult code
+        } else {
+            ActivityCompat.requestPermissions(this, App.pictureSelect, Request.Permissions.REQUEST_CAMERA);
+        }
     }
 
     public void openGallery(GetImageListener listener) {
         mListener = listener;
-        getTakePhoto().onPickFromGalleryWithCrop(PhotoUntils.getInstance().createImageFileUri(), PhotoUntils.getInstance().getCropOptions());
+        PictureSelector.create(this)
+                .openGallery(PictureMimeType.ofImage())
+                .selectionMode(PictureConfig.SINGLE)
+                .previewImage(false)
+                .isCamera(false)
+                .enableCrop(true)// 是否裁剪 true or false
+                .compress(true)// 是否压缩 true or false
+                .withAspectRatio(1, 1)// int 裁剪比例 如16:9 3:2 3:4 1:1 可自定义
+                .freeStyleCropEnabled(true)// 裁剪框是否可拖拽 true or false
+                .circleDimmedLayer(false)// 是否圆形裁剪 true or false
+                .showCropGrid(false)
+                .minimumCompressSize(100)// 小于100kb的图片不压缩
+                .scaleEnabled(true)// 裁剪是否可放大缩小图片 true or false
+                .isDragFrame(true)// 是否可拖动裁剪框(固定)
+                .forResult(PictureConfig.CHOOSE_REQUEST);//结果回调onActivityResult code
     }
 
     public void openTheCamera(GetImageListener listener) {
         mListener = listener;
-        getTakePhoto().onPickFromCaptureWithCrop(PhotoUntils.getInstance().createImageFileUri(), PhotoUntils.getInstance().getCropOptions());
+        if (PermissionUtils.getInstance().hasPermission(this, App.pictureSelect)) {
+            PictureSelector.create(this)
+                    .openCamera(PictureMimeType.ofImage())
+                    .selectionMode(PictureConfig.SINGLE)
+                    .previewImage(false)
+                    .enableCrop(true)// 是否裁剪 true or false
+                    .compress(true)// 是否压缩 true or false
+                    .withAspectRatio(1, 1)// int 裁剪比例 如16:9 3:2 3:4 1:1 可自定义
+                    .freeStyleCropEnabled(true)// 裁剪框是否可拖拽 true or false
+                    .circleDimmedLayer(false)// 是否圆形裁剪 true or false
+                    .showCropGrid(false)
+                    .minimumCompressSize(100)// 小于100kb的图片不压缩
+                    .scaleEnabled(true)// 裁剪是否可放大缩小图片 true or false
+                    .isDragFrame(true)// 是否可拖动裁剪框(固定)
+                    .forResult(PictureConfig.CHOOSE_REQUEST);//结果回调onActivityResult code
+        } else {
+            ActivityCompat.requestPermissions(this, App.pictureSelect, Request.Permissions.REQUEST_CAMERA);
+        }
     }
 
     @Override
@@ -511,42 +542,19 @@ public class CardContentActivity extends BaseTakePhotoActivity implements Androi
     };
 
 
-    @Override
-    public void takeSuccess(TResult result) {
-        super.takeSuccess(result);
-        ViewUnits.getInstance().showLoading(this, "压缩中");
-        CompressImageImpl.of(this, PhotoUntils.getInstance().getCompressConfig(), result.getImages(), new CompressImage.CompressListener() {
-            @Override
-            public void onCompressSuccess(ArrayList<TImage> images) {
-                ViewUnits.getInstance().missLoading();
-                //图片压缩成功
-                mListener.getImage(Base64.encode(ImageUtils.getInstance().image2byte(images.get(0).getCompressPath())));
-                missTakePicDialog();
-            }
-
-            @Override
-            public void onCompressFailed(ArrayList<TImage> images, String msg) {
-                //图片压缩失败
-            }
-        }).compress();
-    }
-
-    @Override
-    public void takeFail(TResult result, String msg) {
-        super.takeFail(result, msg);
-        ViewUnits.getInstance().showToast(msg);
-        missTakePicDialog();
-    }
-
-    @Override
-    public void takeCancel() {
-        super.takeCancel();
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK && requestCode == Request.StartActivityRspCode.SCAN_ID_CARD) {
+
+        if (resultCode == RESULT_OK && requestCode == PictureConfig.CHOOSE_REQUEST) {
+            //图片压缩成功
+            String img = PictureSelector.obtainMultipleResult(data).get(0).getCompressPath();
+            if (!TextUtils.isEmpty(img) && mListener != null) {
+                mListener.getImage(Base64.encode(ImageUtils.getInstance().image2byte(img)));
+            }
+
+        } else if (resultCode == RESULT_OK && requestCode == Request.StartActivityRspCode.SCAN_ID_CARD) {
 
             try {
                 IDCardBean idCardBean = (IDCardBean) data.getSerializableExtra("id_card");

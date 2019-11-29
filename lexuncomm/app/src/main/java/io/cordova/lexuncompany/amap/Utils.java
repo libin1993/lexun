@@ -203,7 +203,7 @@ public class Utils {
 		} else {
 			notification = new NotificationCompat.Builder(context)
 					.setContentTitle(context.getString(R.string.app_name))
-					.setSmallIcon(R.mipmap.ic_launcher)
+					.setSmallIcon(R.mipmap.logo)
 					.setOngoing(true)
 					.setVibrate(new long[]{0})
 					.setSound(null)
