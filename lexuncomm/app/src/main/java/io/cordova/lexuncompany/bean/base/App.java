@@ -46,9 +46,9 @@ public class App {
     }
 
     public static class LexunCard {
-//                public static final String CardUrl="http://122.114.207.137:6163/"; //乐巡生产环境下CardUrl
+                public static final String CardUrl="http://122.114.207.137:6163/"; //乐巡生产环境下CardUrl
 
-        public static final String CardUrl = "http://183.129.130.119:12010/"; //研发环境外网
+//        public static final String CardUrl = "http://183.129.130.119:12010/"; //研发环境外网
 
 //        public static final String CardUrl = "http://183.129.130.119:13131/"; //测试环境外网
 
