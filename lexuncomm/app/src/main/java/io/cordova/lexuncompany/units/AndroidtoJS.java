@@ -24,6 +24,7 @@ import com.baidu.location.BDAbstractLocationListener;
 import com.baidu.location.BDLocation;
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
+import com.facebook.stetho.common.LogUtil;
 import com.tencent.bugly.beta.Beta;
 
 import org.json.JSONException;
@@ -108,6 +109,7 @@ public class AndroidtoJS implements QrCodeScanInter, CityPickerResultListener {
      */
     @JavascriptInterface
     public void getDeviceId(String callBack) {
+        Log.d(TAG, "getDeviceId: "+callBack);
         sendCallBack(callBack, "200", "success", BaseUnits.getInstance().getPhoneKey());
     }
 

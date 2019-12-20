@@ -118,9 +118,6 @@ public class CardContentActivity extends BaseActivity implements AndroidToJSCall
         setListener();
 
 
-
-//        buildNotification();
-
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(RECEIVER_ACTION);
         registerReceiver(locationChangeBroadcastReceiver, intentFilter);
@@ -183,45 +180,6 @@ public class CardContentActivity extends BaseActivity implements AndroidToJSCall
     public void stopLocationService() {
         sendBroadcast(Utils.getCloseBrodecastIntent());
         LocationStatusManager.getInstance().resetToInit(getApplicationContext());
-    }
-
-
-    /**
-     * @return 后台定位
-     */
-    private void buildNotification() {
-        Notification notification;
-        if (android.os.Build.VERSION.SDK_INT >= 26) {
-            //Android O上对Notification进行了修改，如果设置的targetSDKVersion>=26建议使用此种方式创建通知栏
-            if (null == notificationManager) {
-                notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            }
-            String channelId = getPackageName();
-            NotificationChannel notificationChannel = new NotificationChannel(channelId,
-                    "定位", NotificationManager.IMPORTANCE_HIGH);
-            notificationChannel.enableLights(false);
-            notificationChannel.enableVibration(false);
-            notificationChannel.setVibrationPattern(new long[]{0});
-            notificationChannel.setSound(null, null);
-            notificationManager.createNotificationChannel(notificationChannel);
-
-            notification = new Notification.Builder(this, channelId)
-                    .setContentTitle(getString(R.string.app_name))
-                    .setSmallIcon(R.mipmap.logo)
-                    .setOngoing(true)
-                    .build();
-
-        } else {
-            notification = new NotificationCompat.Builder(this)
-                    .setContentTitle(getString(R.string.app_name))
-                    .setSmallIcon(R.mipmap.logo)
-                    .setOngoing(true)
-                    .setVibrate(new long[]{0})
-                    .setSound(null)
-                    .build();
-
-        }
-        notificationManager.notify(2001, notification);
     }
 
 
@@ -385,15 +343,15 @@ public class CardContentActivity extends BaseActivity implements AndroidToJSCall
             }
         });
 
-        mBinding.webView.setOnKeyListener((view, i, keyEvent) -> {
-            if (keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
-                if (i == KeyEvent.KEYCODE_BACK && mBinding.webView.canGoBack()) {
-                    mBinding.webView.goBack();
-                    return true;
-                }
-            }
-            return false;
-        });
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mBinding.webView.canGoBack()) {
+            mBinding.webView.goBack();
+        } else {
+            super.onBackPressed();
+        }
     }
 
     /**

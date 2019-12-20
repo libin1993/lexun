@@ -46,14 +46,15 @@ public class App {
     }
 
     public static class LexunCard {
-                public static final String CardUrl="http://122.114.207.137:6163/"; //乐巡生产环境下CardUrl
+        //生产环境
+//        public static final String CardUrl = "http://lexun.yikahui.net";
 
-//        public static final String CardUrl = "http://183.129.130.119:12010/"; //研发环境外网
+        //研发环境
+//        public static final String CardUrl = "http://183.129.130.119:12010/";
 
-//        public static final String CardUrl = "http://183.129.130.119:13131/"; //测试环境外网
+        //测试环境
+        public static final String CardUrl = "http://183.129.130.119:13131/";
 
-
-        //        public static final String CardUrl = "http://10.130.0.207:8010/#/"; //测试环境内网
 
         public static final String BUGLY_APPID = "026a35dd56";  //bugly乐巡
 
