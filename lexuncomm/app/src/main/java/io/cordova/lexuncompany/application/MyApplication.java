@@ -3,6 +3,7 @@ package io.cordova.lexuncompany.application;
 import android.app.Application;
 import android.content.Context;
 import android.support.multidex.MultiDex;
+import android.util.Log;
 
 import com.facebook.stetho.Stetho;
 import com.tencent.bugly.Bugly;
@@ -35,12 +36,11 @@ public class MyApplication extends Application {
                 .setNetworkExecutor(new URLConnectionNetworkExecutor()) //使用HttpURLConnection做网络层
         );
 
+        Log.d("libin", "onCreate: "+"kkkkkkk");
         Logger.setTag("NoHttpSample");
         Logger.setDebug(true); //开启调试模式
 
         Stetho.initializeWithDefaults(this);  //初始化Chrome查看Sqlite插件
-        Beta.canShowUpgradeActs.add(CardContentActivity.class);
-        Bugly.init(getApplicationContext(), App.LexunCard.BUGLY_APPID, false);  //乐巡企业版bugly
 
         //极光推送
         JPushInterface.setDebugMode(true);

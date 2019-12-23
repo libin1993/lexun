@@ -80,4 +80,5 @@
     <color name="commom_background">#f3f3f3</color>
     <color name="blue_3a7">#3A7FCE</color>
     <color name="blue_0d8">#0D80D4</color>
+    <color name="gray_550">#55000000</color>
 </resources>
