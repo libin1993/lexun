@@ -36,7 +36,6 @@ public class MyApplication extends Application {
                 .setNetworkExecutor(new URLConnectionNetworkExecutor()) //使用HttpURLConnection做网络层
         );
 
-        Log.d("libin", "onCreate: "+"kkkkkkk");
         Logger.setTag("NoHttpSample");
         Logger.setDebug(true); //开启调试模式
 

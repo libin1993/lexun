@@ -202,9 +202,9 @@ public class CardContentActivity extends BaseActivity implements AndroidToJSCall
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (RECEIVER_ACTION.equals(action)) {
-
+                String speed = intent.getStringExtra("speed");
                 String location= intent.getStringExtra("location");
-                sendCallback(locationCallback, "200", "success", location);
+                sendCallback(locationCallback, "200", "success", location,speed);
 
             }
         }
@@ -214,15 +214,16 @@ public class CardContentActivity extends BaseActivity implements AndroidToJSCall
     /**
      * @param callback
      * @param status
-     * @param msg
+     * @param msg   定位
      * @param value
      */
-    private void sendCallback(String callback, String status, String msg, String value) {
+    private void sendCallback(String callback, String status, String msg, String value,String speed) {
 
         try {
             JSONObject jsonObject = new JSONObject();
             JSONObject data = new JSONObject();
             data.put("value", value);
+            data.put("sp",speed);
             jsonObject.put("status", status);
             jsonObject.put("msg", msg);
             jsonObject.put("data", data);

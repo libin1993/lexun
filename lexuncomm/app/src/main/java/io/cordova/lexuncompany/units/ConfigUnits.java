@@ -7,6 +7,7 @@ import android.location.LocationManager;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import io.cordova.lexuncompany.application.MyApplication;
 import io.cordova.lexuncompany.bean.base.Field;
 import io.cordova.lexuncompany.view.CardContentActivity;
 
@@ -114,7 +115,7 @@ public class ConfigUnits {
      * @return 是否开启gps
      */
     public boolean isOpenGps() {
-        LocationManager locationManager = (LocationManager) CardContentActivity.getInstance().getSystemService(Context.LOCATION_SERVICE);
+        LocationManager locationManager = (LocationManager) MyApplication.getInstance().getSystemService(Context.LOCATION_SERVICE);
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
     }
 }

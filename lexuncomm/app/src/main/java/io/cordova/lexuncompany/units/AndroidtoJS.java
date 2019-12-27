@@ -332,6 +332,10 @@ public class AndroidtoJS implements QrCodeScanInter, CityPickerResultListener {
 
             mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
             mLocationOption.setInterval(0);
+            // 地址信息
+            mLocationOption.setNeedAddress(true);
+            //获取速度
+            mLocationOption.setSensorEnable(true);
             mLocationClient1.setLocationOption(mLocationOption);
 
             mLocationClient1.setLocationListener(new AMapLocationListener() {
@@ -579,9 +583,23 @@ public class AndroidtoJS implements QrCodeScanInter, CityPickerResultListener {
             ActivityCompat.requestPermissions(CardContentActivity.getInstance(),
                     new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA);
         }
-
-
     }
+
+    /**
+     * 语音合成
+     *
+     * @param value
+     */
+    @JavascriptInterface
+    public void textToSpeech(String value) {
+        try {
+            JSONObject jsonObject = new JSONObject(value);
+            SpeechCompoundUnits.getInstance().speakText(jsonObject.getString("value"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
 
 
     public void sendCallBack(String callBack, String status, String msg, String value) {

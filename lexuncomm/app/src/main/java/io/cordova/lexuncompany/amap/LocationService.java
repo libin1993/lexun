@@ -87,6 +87,8 @@ public class LocationService extends NotiService {
         mLocationOption.setInterval(10 * 1000);
         // 地址信息
         mLocationOption.setNeedAddress(true);
+        //获取速度
+        mLocationOption.setSensorEnable(true);
         mLocationClient.setLocationOption(mLocationOption);
         mLocationClient.setLocationListener(locationListener);
         mLocationClient.startLocation();
@@ -123,6 +125,7 @@ public class LocationService extends NotiService {
     private void sendLocationBroadcast(AMapLocation aMapLocation) {
         if (aMapLocation != null && aMapLocation.getLongitude() > 0 && aMapLocation.getLatitude() > 0) {
             Intent mIntent = new Intent(CardContentActivity.RECEIVER_ACTION);
+            mIntent.putExtra("speed",String.valueOf(aMapLocation.getSpeed()));
             mIntent.putExtra("location", aMapLocation.getLatitude()+","+aMapLocation.getLongitude());
             //发送广播
             sendBroadcast(mIntent);
