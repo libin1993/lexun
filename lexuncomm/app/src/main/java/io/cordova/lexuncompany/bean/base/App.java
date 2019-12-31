@@ -47,8 +47,8 @@ public class App {
 
     public static class LexunCard {
         //研发环境
-        public static final String CardUrl = "http://183.129.130.119:12010/";
-        public static final String BUGLY_APPID ="b6722d0470";  //bugly
+//        public static final String CardUrl = "http://183.129.130.119:12010/";
+//        public static final String BUGLY_APPID ="b6722d0470";  //bugly
 
 
         //生产环境
@@ -57,8 +57,8 @@ public class App {
 
 
         //测试环境
-//        public static final String CardUrl = "http://183.129.130.119:13131/";
-//        public static final String BUGLY_APPID = "cc5b9c4bdc";  // bugly
+        public static final String CardUrl = "http://183.129.130.119:13146/";
+        public static final String BUGLY_APPID = "cc5b9c4bdc";  // bugly
 
 
 

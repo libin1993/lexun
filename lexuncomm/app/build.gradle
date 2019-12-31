@@ -44,7 +44,7 @@ android {
     compileSdkVersion 28
     buildToolsVersion '27.0.3'
     defaultConfig {
-        versionCode 17
+        versionCode 100
         versionName "1.1.2"
         applicationId "io.cordova.lexuncompany"
         targetSdkVersion 28

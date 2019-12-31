@@ -49,7 +49,7 @@ public class MyApplication extends Application {
         UMConfigure.init(this, "5bbf0375b465f5d4170000f8", "测试环境", UMConfigure.DEVICE_TYPE_PHONE, null);
         MobclickAgent.setScenarioType(this, MobclickAgent.EScenarioType.E_UM_NORMAL);
 
-        this.mInstance = this;
+        mInstance = this;
     }
 
     public static MyApplication getInstance() {
