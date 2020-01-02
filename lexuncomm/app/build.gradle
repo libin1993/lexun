@@ -44,12 +44,20 @@ android {
     compileSdkVersion 28
     buildToolsVersion '27.0.3'
     defaultConfig {
-        versionCode 100
+        versionCode 1
         versionName "1.1.2"
-        applicationId "io.cordova.lexuncompany"
+        applicationId "com.tdr.lexun"
         targetSdkVersion 28
         minSdkVersion 19
         multiDexEnabled true
+
+        //极光推送
+        manifestPlaceholders = [
+                JPUSH_PKGNAME: "com.tdr.lexun",
+                JPUSH_APPKEY : "9fbafe659660a05d2fd316fa", //JPush 上注册的包名对应的 Appkey.
+                JPUSH_CHANNEL: "developer-default", //暂时填写默认值即可.
+        ]
+
 
         ndk {
             abiFilters "armeabi", "armeabi-v7a", "x86", "mips", "armeabi" , "mips64"
@@ -104,7 +112,6 @@ dependencies {
     //集成bugly
     implementation 'com.tencent.bugly:crashreport_upgrade:latest.release'
     implementation 'com.tencent.bugly:nativecrashreport:latest.release'
-    implementation files('libs/jcore-android-1.2.0.jar')
     implementation 'org.jetbrains:annotations:15.0'
     //友盟
     implementation 'com.umeng.sdk:common:1.5.0'
@@ -124,4 +131,8 @@ dependencies {
     implementation 'com.github.LuckSiege.PictureSelector:picture_library:v2.2.4'
     implementation project(path: ':zbar')
     implementation files('libs/Msc.jar')
+
+    //极光推送
+    implementation 'cn.jiguang.sdk:jpush:3.5.4'
+    implementation 'cn.jiguang.sdk:jcore:2.2.4'
 }
