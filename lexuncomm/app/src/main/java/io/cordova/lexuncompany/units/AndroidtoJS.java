@@ -64,9 +64,12 @@ public class AndroidtoJS implements QrCodeScanInter, CityPickerResultListener {
 
     private AndroidToJSCallBack mCallBack;
 
+    private CardContentActivity mContext;
 
 
-    public AndroidtoJS(AndroidToJSCallBack callBack) {
+
+    public AndroidtoJS(Context context,AndroidToJSCallBack callBack) {
+        mContext = (CardContentActivity) context;
         this.mCallBack = callBack;
     }
 
@@ -409,6 +412,8 @@ public class AndroidtoJS implements QrCodeScanInter, CityPickerResultListener {
             mLocationOption.setLocationCacheEnable(false);
             mLocationClient.setLocationOption(mLocationOption);
             mLocationClient.startLocation();
+            //启动后台定位，第一个参数为通知栏ID，建议整个APP使用一个
+            mLocationClient.enableBackgroundLocation(2001, mContext.buildNotification());
             mLocationClient.setLocationListener(new AMapLocationListener() {
                 @Override
                 public void onLocationChanged(AMapLocation aMapLocation) {
@@ -425,7 +430,6 @@ public class AndroidtoJS implements QrCodeScanInter, CityPickerResultListener {
             mLocationClient.startLocation();
         }
 
-//        CardContentActivity.getInstance().startLocationService(callBack);
 
     }
 
@@ -439,11 +443,11 @@ public class AndroidtoJS implements QrCodeScanInter, CityPickerResultListener {
     public void endPatrol() {
         Log.d(TAG, "endPatrol: ");
         if (mLocationClient != null) {
+            //关闭后台定位，参数为true时会移除通知栏，为false时不会移除通知栏，但是可以手动移除
+            mLocationClient.disableBackgroundLocation(true);
             mLocationClient.stopLocation();
             mLocationClient = null;
         }
-
-//        CardContentActivity.getInstance().stopLocationService();
     }
 
 //
