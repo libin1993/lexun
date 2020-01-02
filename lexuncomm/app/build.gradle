@@ -51,6 +51,13 @@ android {
         minSdkVersion 19
         multiDexEnabled true
 
+        //极光推送
+        manifestPlaceholders = [
+                JPUSH_PKGNAME: "io.cordova.lexuncompany",
+                JPUSH_APPKEY : "427998f4cd69887acccdc929", //JPush 上注册的包名对应的 Appkey.
+                JPUSH_CHANNEL: "developer-default", //暂时填写默认值即可.
+        ]
+
         ndk {
             abiFilters "armeabi", "armeabi-v7a", "x86", "mips", "armeabi" , "mips64"
         }
@@ -104,7 +111,6 @@ dependencies {
     //集成bugly
     implementation 'com.tencent.bugly:crashreport_upgrade:latest.release'
     implementation 'com.tencent.bugly:nativecrashreport:latest.release'
-    implementation files('libs/jcore-android-1.2.0.jar')
     implementation 'org.jetbrains:annotations:15.0'
     //友盟
     implementation 'com.umeng.sdk:common:1.5.0'
@@ -124,4 +130,8 @@ dependencies {
     implementation 'com.github.LuckSiege.PictureSelector:picture_library:v2.2.4'
     implementation project(path: ':zbar')
     implementation files('libs/Msc.jar')
+
+    //极光推送
+    implementation 'cn.jiguang.sdk:jpush:3.5.4'
+    implementation 'cn.jiguang.sdk:jcore:2.2.4'
 }

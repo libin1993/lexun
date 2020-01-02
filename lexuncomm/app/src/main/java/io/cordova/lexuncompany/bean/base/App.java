@@ -52,16 +52,13 @@ public class App {
 
 
         //生产环境
-//        public static final String CardUrl = "http://lexun.yikahui.net";
+//        public static final String CardUrl = "http://lexun.yikahui.net/";
 //        public static final String BUGLY_APPID = "026a35dd56";  // bugly
 
 
         //测试环境
 //        public static final String CardUrl = "http://183.129.130.119:13131/";
 //        public static final String BUGLY_APPID = "cc5b9c4bdc";  // bugly
-
-
-
 
 
     }

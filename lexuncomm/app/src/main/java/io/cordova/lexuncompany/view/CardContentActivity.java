@@ -13,13 +13,16 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
+import android.graphics.Color;
 import android.net.Uri;
+import android.net.http.SslError;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -29,6 +32,7 @@ import android.view.animation.AnimationUtils;
 import android.webkit.GeolocationPermissions;
 import android.webkit.JavascriptInterface;
 import android.webkit.JsResult;
+import android.webkit.SslErrorHandler;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -49,11 +53,9 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Random;
+
 import cn.jpush.android.api.JPushInterface;
 import io.cordova.lexuncompany.R;
-import io.cordova.lexuncompany.amap.LocationService;
-import io.cordova.lexuncompany.amap.LocationStatusManager;
-import io.cordova.lexuncompany.amap.Utils;
 import io.cordova.lexuncompany.bean.IDCardBean;
 import io.cordova.lexuncompany.bean.base.App;
 import io.cordova.lexuncompany.bean.base.Request;
@@ -69,7 +71,6 @@ import io.cordova.lexuncompany.units.ConfigUnits;
 import io.cordova.lexuncompany.units.FormatUtils;
 import io.cordova.lexuncompany.units.ImageUtils;
 import io.cordova.lexuncompany.units.PermissionUtils;
-import io.cordova.lexuncompany.units.ViewUnits;
 
 import static io.cordova.lexuncompany.bean.base.Request.Permissions.REQUEST_ALL_PERMISSIONS;
 
@@ -95,13 +96,9 @@ public class CardContentActivity extends BaseActivity implements AndroidToJSCall
 
     private AndroidtoJS androidtoJS;
 
-
-    //巡逻callback
-    private String locationCallback;
-
-
-    public static final String RECEIVER_ACTION = "location_in_background";
-
+    private static final String NOTIFICATION_CHANNEL_NAME = "BackgroundLocation";
+    public NotificationManager notificationManager = null;
+    boolean isCreateChannel = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -121,13 +118,43 @@ public class CardContentActivity extends BaseActivity implements AndroidToJSCall
 
         setListener();
 
-
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(RECEIVER_ACTION);
-        registerReceiver(locationChangeBroadcastReceiver, intentFilter);
-
-
         checkUpdate();
+
+    }
+
+    /**
+     * @return 定位前台通知
+     */
+    public Notification buildNotification() {
+
+        Notification.Builder builder = null;
+        Notification notification = null;
+        if(android.os.Build.VERSION.SDK_INT >= 26) {
+            //Android O上对Notification进行了修改，如果设置的targetSDKVersion>=26建议使用此种方式创建通知栏
+            if (null == notificationManager) {
+                notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            }
+            String channelId = getPackageName();
+            if(!isCreateChannel) {
+                NotificationChannel notificationChannel = new NotificationChannel(channelId,
+                        NOTIFICATION_CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
+                notificationChannel.enableLights(true);//是否在桌面icon右上角展示小圆点
+                notificationChannel.setLightColor(Color.BLUE); //小圆点颜色
+                notificationChannel.setShowBadge(true); //是否在久按桌面图标时显示此渠道的通知
+                notificationManager.createNotificationChannel(notificationChannel);
+                isCreateChannel = true;
+            }
+            builder = new Notification.Builder(getApplicationContext(), channelId);
+        } else {
+            builder = new Notification.Builder(getApplicationContext());
+        }
+        builder.setSmallIcon(R.mipmap.logo)
+                .setContentTitle(getString(R.string.app_name))
+                .setContentText("正在后台运行")
+                .setWhen(System.currentTimeMillis());
+
+        notification = builder.build();
+        return notification;
 
     }
 
@@ -144,7 +171,7 @@ public class CardContentActivity extends BaseActivity implements AndroidToJSCall
         Beta.upgradeDialogLifecycleListener = new UILifecycleListener<UpgradeInfo>() {
             @Override
             public void onCreate(Context context, View view, UpgradeInfo upgradeInfo) {
-                Log.d("libin", "onResume111"+upgradeInfo.upgradeType);
+                Log.d("libin", "onResume111" + upgradeInfo.upgradeType);
                 // 注：可通过这个回调方式获取布局的控件，如果设置了id，可通过findViewById方式获取，如果设置了tag，可以通过findViewWithTag，具体参考下面例子:
 
                 // 通过id方式获取控件
@@ -155,7 +182,7 @@ public class CardContentActivity extends BaseActivity implements AndroidToJSCall
                 ivCancel.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (upgradeInfo.upgradeType == 2){
+                        if (upgradeInfo.upgradeType == 2) {
                             finish();
                             System.exit(0);
                             android.os.Process.killProcess(android.os.Process.myPid());
@@ -171,7 +198,6 @@ public class CardContentActivity extends BaseActivity implements AndroidToJSCall
 
             @Override
             public void onResume(Context context, View view, UpgradeInfo upgradeInfo) {
-
 
 
             }
@@ -196,34 +222,20 @@ public class CardContentActivity extends BaseActivity implements AndroidToJSCall
         Bugly.init(getApplicationContext(), App.LexunCard.BUGLY_APPID, false);
     }
 
-    private BroadcastReceiver locationChangeBroadcastReceiver = new BroadcastReceiver() {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (RECEIVER_ACTION.equals(action)) {
-                String speed = intent.getStringExtra("speed");
-                String location= intent.getStringExtra("location");
-                sendCallback(locationCallback, "200", "success", location,speed);
-
-            }
-        }
-    };
-
 
     /**
      * @param callback
      * @param status
-     * @param msg   定位
+     * @param msg      定位
      * @param value
      */
-    private void sendCallback(String callback, String status, String msg, String value,String speed) {
+    private void sendCallback(String callback, String status, String msg, String value, String speed) {
 
         try {
             JSONObject jsonObject = new JSONObject();
             JSONObject data = new JSONObject();
             data.put("value", value);
-            data.put("sp",speed);
+            data.put("sp", speed);
             jsonObject.put("status", status);
             jsonObject.put("msg", msg);
             jsonObject.put("data", data);
@@ -235,24 +247,6 @@ public class CardContentActivity extends BaseActivity implements AndroidToJSCall
         }
     }
 
-
-    /**
-     * 开始定位服务
-     */
-    public void startLocationService(String callback) {
-        locationCallback = callback;
-        getApplicationContext().startService(new Intent(this, LocationService.class));
-        LocationStatusManager.getInstance().resetToInit(getApplicationContext());
-    }
-
-    /**
-     * 关闭服务
-     * 先关闭守护进程，再关闭定位服务
-     */
-    public void stopLocationService() {
-        sendBroadcast(Utils.getCloseBrodecastIntent());
-        LocationStatusManager.getInstance().resetToInit(getApplicationContext());
-    }
 
 
     /**
@@ -336,7 +330,6 @@ public class CardContentActivity extends BaseActivity implements AndroidToJSCall
     }
 
 
-    @JavascriptInterface
     public void initView() {
         WebSettings webSettings = mBinding.webView.getSettings();
         webSettings.setJavaScriptEnabled(true);  //设置与JS交互权限
@@ -363,7 +356,6 @@ public class CardContentActivity extends BaseActivity implements AndroidToJSCall
                         isFirstLoaded = false;
                         mBinding.layoutLoading.startAnimation(AnimationUtils.loadAnimation(CardContentActivity.this, R.anim.layout_card_loading_close));
                         mBinding.layoutLoading.setVisibility(View.GONE);
-
                     }
                 }
             }
@@ -384,7 +376,7 @@ public class CardContentActivity extends BaseActivity implements AndroidToJSCall
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-
+                Log.d("libin", "shouldOverrideUrlLoading: "+url);
                 if (url == null) return false;
                 if (url.startsWith("http:") || url.startsWith("https:")) {
                     view.loadUrl(url);
@@ -398,11 +390,14 @@ public class CardContentActivity extends BaseActivity implements AndroidToJSCall
                 }
                 return true;
             }
+
+
         });
 
-        androidtoJS = new AndroidtoJS(this);
+        androidtoJS = new AndroidtoJS(this,this);
         mBinding.webView.addJavascriptInterface(androidtoJS, "NativeForJSUnits");
         mBinding.webView.loadUrl(App.LexunCard.CardUrl);
+
 
     }
 
@@ -422,7 +417,9 @@ public class CardContentActivity extends BaseActivity implements AndroidToJSCall
         if (mBinding.webView.canGoBack()) {
             mBinding.webView.goBack();
         } else {
-            super.onBackPressed();
+            Intent home = new Intent(Intent.ACTION_MAIN);
+            home.addCategory(Intent.CATEGORY_HOME);
+            startActivity(home);
         }
     }
 
@@ -545,9 +542,6 @@ public class CardContentActivity extends BaseActivity implements AndroidToJSCall
         destroyWebView();
         mBinding = null;
 
-        if (locationChangeBroadcastReceiver != null)
-            unregisterReceiver(locationChangeBroadcastReceiver);
-
         super.onDestroy();
 
     }
@@ -570,7 +564,6 @@ public class CardContentActivity extends BaseActivity implements AndroidToJSCall
             }
         }
     };
-
 
 
     @Override

@@ -65,11 +65,14 @@ public class AndroidtoJS implements QrCodeScanInter, CityPickerResultListener {
     private AndroidToJSCallBack mCallBack;
 
 
+    private CardContentActivity mContext;
 
-    public AndroidtoJS(AndroidToJSCallBack callBack) {
+
+
+    public AndroidtoJS(Context context,AndroidToJSCallBack callBack) {
+        mContext = (CardContentActivity) context;
         this.mCallBack = callBack;
     }
-
 
 //    private LocationClient getBaiduLocationClient1(String callBack) {
 //        if (mBaiduOption1 == null) mBaiduOption1 = new LocationClientOption();
@@ -398,35 +401,34 @@ public class AndroidtoJS implements QrCodeScanInter, CityPickerResultListener {
      */
     @JavascriptInterface
     public void beginPatrol(String callBack) {
-        Log.d(TAG, "beginPatrol2: " + callBack);
-//        if (mLocationClient == null) {
-//            Log.d(TAG, "巡逻:13");
-//            mLocationClient = new AMapLocationClient(MyApplication.getInstance());
-//            AMapLocationClientOption mLocationOption = new AMapLocationClientOption();
-//
-//            mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
-//            mLocationOption.setInterval(10000);
-//            mLocationOption.setLocationCacheEnable(false);
-//            mLocationClient.setLocationOption(mLocationOption);
-//            mLocationClient.startLocation();
-//            mLocationClient.setLocationListener(new AMapLocationListener() {
-//                @Override
-//                public void onLocationChanged(AMapLocation aMapLocation) {
-//                    if (aMapLocation != null && aMapLocation.getLatitude() != 0 && aMapLocation.getLongitude() != 0) {
-//
-//                        sendCallBack(callBack, "200", "success", aMapLocation.getLatitude() + "," + aMapLocation.getLongitude());
-//                        Log.d(TAG, "onLocationChanged: "+aMapLocation.getLatitude() + "," + aMapLocation.getLongitude());
-//                    }
-//
-//                }
-//            });
-//
-//        } else if (!mLocationClient.isStarted()) {
-//            mLocationClient.startLocation();
-//        }
+        Log.d(TAG, "beginPatrol: " + callBack);
+        if (mLocationClient == null) {
+            Log.d(TAG, "巡逻:13");
+            mLocationClient = new AMapLocationClient(MyApplication.getInstance());
+            AMapLocationClientOption mLocationOption = new AMapLocationClientOption();
 
-        CardContentActivity.getInstance().startLocationService(callBack);
+            mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
+            mLocationOption.setInterval(10000);
+            mLocationOption.setLocationCacheEnable(false);
+            mLocationClient.setLocationOption(mLocationOption);
+            mLocationClient.startLocation();
+            //启动后台定位，第一个参数为通知栏ID，建议整个APP使用一个
+            mLocationClient.enableBackgroundLocation(2001, mContext.buildNotification());
+            mLocationClient.setLocationListener(new AMapLocationListener() {
+                @Override
+                public void onLocationChanged(AMapLocation aMapLocation) {
+                    if (aMapLocation != null && aMapLocation.getLatitude() != 0 && aMapLocation.getLongitude() != 0) {
 
+                        sendCallBack(callBack, "200", "success", aMapLocation.getLatitude() + "," + aMapLocation.getLongitude());
+                        Log.d(TAG, "onLocationChanged: "+aMapLocation.getLatitude() + "," + aMapLocation.getLongitude());
+                    }
+
+                }
+            });
+
+        } else if (!mLocationClient.isStarted()) {
+            mLocationClient.startLocation();
+        }
     }
 
 
@@ -438,12 +440,13 @@ public class AndroidtoJS implements QrCodeScanInter, CityPickerResultListener {
     @JavascriptInterface
     public void endPatrol() {
         Log.d(TAG, "endPatrol: ");
-//        if (mLocationClient != null) {
-//            mLocationClient.stopLocation();
-//            mLocationClient = null;
-//        }
+        if (mLocationClient != null) {
+            //关闭后台定位，参数为true时会移除通知栏，为false时不会移除通知栏，但是可以手动移除
+            mLocationClient.disableBackgroundLocation(true);
+            mLocationClient.stopLocation();
+            mLocationClient = null;
+        }
 
-        CardContentActivity.getInstance().stopLocationService();
     }
 
 //
@@ -592,6 +595,7 @@ public class AndroidtoJS implements QrCodeScanInter, CityPickerResultListener {
      */
     @JavascriptInterface
     public void textToSpeech(String value) {
+        Log.d("libin", "textToSpeech: "+value);
         try {
             JSONObject jsonObject = new JSONObject(value);
             SpeechCompoundUnits.getInstance().speakText(jsonObject.getString("value"));
