@@ -25,7 +25,7 @@ import io.cordova.lexuncompany.view.CardContentActivity;
  * 2) 接收不到自定义消息
  */
 public class MyReceiver extends BroadcastReceiver {
-    private static final String TAG = "JIGUANG-Example";
+    private static final String TAG = "libin";
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -74,7 +74,7 @@ public class MyReceiver extends BroadcastReceiver {
 
                 Intent i = new Intent();
                 JSONObject jsonObject = new JSONObject(result);
-                if (CardContentActivity.isRunning) {
+                if (BaseUnits.getInstance().isActivityRunning("io.cordova.lexuncompany.view.CardContentActivity")) {
                     i.setAction(Request.Broadcast.RELOADURL);
                     i.putExtra("url", jsonObject.getString("Url"));
                     context.sendBroadcast(i);
@@ -86,14 +86,14 @@ public class MyReceiver extends BroadcastReceiver {
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
-                if (!CardContentActivity.isRunning){
+                if (!BaseUnits.getInstance().isActivityRunning("io.cordova.lexuncompany.view.CardContentActivity")){
                     Intent i = new Intent(context, CardContentActivity.class);
                     i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(i);
                 }
             }
         } else {
-            if (!CardContentActivity.isRunning){
+            if (!BaseUnits.getInstance().isActivityRunning("io.cordova.lexuncompany.view.CardContentActivity")){
                 Intent i = new Intent(context, CardContentActivity.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(i);
