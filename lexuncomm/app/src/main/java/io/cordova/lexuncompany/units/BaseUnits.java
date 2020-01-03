@@ -2,6 +2,8 @@ package io.cordova.lexuncompany.units;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.ActivityManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
@@ -11,6 +13,7 @@ import android.telephony.TelephonyManager;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import io.cordova.lexuncompany.application.MyApplication;
@@ -199,6 +202,21 @@ public class BaseUnits {
             return tm.getLine1Number();
         }
         return "";
+    }
+
+    /**
+     * 判断某个Activity是否正在运行
+     * @param activityClassName
+     * @return
+     */
+    public boolean isActivityRunning(String activityClassName) {
+        ActivityManager activityManager = (ActivityManager) MyApplication.getInstance().getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningTaskInfo> info = activityManager.getRunningTasks(1);
+        if (info != null && info.size() > 0) {
+            ComponentName component = info.get(0).topActivity;
+            return activityClassName.equals(component.getClassName());
+        }
+        return false;
     }
 
 }

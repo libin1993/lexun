@@ -47,7 +47,7 @@ import static cn.bertsir.zbar.QrConfig.REQUEST_CAMERA;
 /**
  * Created by JasonYao on 2018/9/3
  */
-public class AndroidtoJS implements QrCodeScanInter, CityPickerResultListener {
+public class AndroidtoJS{
     private static final String TAG = "libin";
 
     //    //巡逻相关
@@ -199,11 +199,15 @@ public class AndroidtoJS implements QrCodeScanInter, CityPickerResultListener {
      */
     @JavascriptInterface
     public void qrScan(String callBack) {
-        Intent intent = new Intent(MyApplication.getInstance().getBaseContext(), ScanQRCodeActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.putExtra("callBack", callBack);
-        ScanQRCodeActivity.setQrCodeScanInter(AndroidtoJS.this);
-        MyApplication.getInstance().getBaseContext().startActivity(intent);
+        if (BaseUnits.getInstance().checkPermission(mContext, Manifest.permission.CAMERA)) {
+            Intent intent = new Intent(MyApplication.getInstance().getBaseContext(), ScanQRCodeActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.putExtra("callBack", callBack);
+            mContext.startActivity(intent);
+        } else {
+            ActivityCompat.requestPermissions(mContext,
+                    new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA);
+        }
     }
 
     /**
@@ -265,8 +269,8 @@ public class AndroidtoJS implements QrCodeScanInter, CityPickerResultListener {
      */
     @JavascriptInterface
     public void finish() {
-        if (CardContentActivity.getInstance() != null) {
-            CardContentActivity.getInstance().finish();
+        if (mContext != null) {
+            mContext.finish();
         }
     }
 
@@ -278,7 +282,7 @@ public class AndroidtoJS implements QrCodeScanInter, CityPickerResultListener {
      */
     @JavascriptInterface
     public void locationServicesEnabled(String value) {
-        if (ActivityCompat.checkSelfPermission(CardContentActivity.getInstance(),
+        if (ActivityCompat.checkSelfPermission(mContext,
                 Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             try {
                 JSONObject jsonObject = new JSONObject();
@@ -296,7 +300,7 @@ public class AndroidtoJS implements QrCodeScanInter, CityPickerResultListener {
         }
 
 
-        LocationManager locationManager = (LocationManager) CardContentActivity.getInstance().getSystemService(Context.LOCATION_SERVICE);
+        LocationManager locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
         if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             try {
                 JSONObject jsonObject = new JSONObject();
@@ -503,7 +507,7 @@ public class AndroidtoJS implements QrCodeScanInter, CityPickerResultListener {
      */
     @JavascriptInterface
     public void getPhoto(String callBack) {
-        CardContentActivity.getInstance().takePhoto(imageData -> {
+        mContext.takePhoto(imageData -> {
             Log.e(TAG, imageData);
             sendCallBack(callBack, "200", "success", "data:image/jpeg;base64," + imageData);
         });
@@ -529,7 +533,7 @@ public class AndroidtoJS implements QrCodeScanInter, CityPickerResultListener {
      */
     @JavascriptInterface
     public void OpenGallery(String callBack) {
-        CardContentActivity.getInstance().openGallery(imageData -> {
+        mContext.openGallery(imageData -> {
             Log.e(TAG, imageData);
             sendCallBack(callBack, "200", "success", "data:image/jpeg;base64," + imageData);
         });
@@ -542,7 +546,7 @@ public class AndroidtoJS implements QrCodeScanInter, CityPickerResultListener {
      */
     @JavascriptInterface
     public void OpenTheCamera(String callBack) {
-        CardContentActivity.getInstance().openTheCamera(imageData -> {
+        mContext.openTheCamera(imageData -> {
             Log.e(TAG, imageData);
             sendCallBack(callBack, "200", "success", "data:image/jpeg;base64," + imageData);
         });
@@ -556,14 +560,14 @@ public class AndroidtoJS implements QrCodeScanInter, CityPickerResultListener {
      */
     @JavascriptInterface
     public void IDCard_front(String value) {
-        if (BaseUnits.getInstance().checkPermission(CardContentActivity.getInstance(), Manifest.permission.CAMERA)) {
-            Intent intent = new Intent(CardContentActivity.getInstance(), CaptureActivity.class);
+        if (BaseUnits.getInstance().checkPermission(mContext, Manifest.permission.CAMERA)) {
+            Intent intent = new Intent(mContext, CaptureActivity.class);
 
             intent.putExtra("is_front", true);
             intent.putExtra("callback", value);
-            CardContentActivity.getInstance().startActivityForResult(intent, Request.StartActivityRspCode.SCAN_ID_CARD);
+            mContext.startActivityForResult(intent, Request.StartActivityRspCode.SCAN_ID_CARD);
         } else {
-            ActivityCompat.requestPermissions(CardContentActivity.getInstance(),
+            ActivityCompat.requestPermissions(mContext,
                     new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA);
         }
 
@@ -578,13 +582,13 @@ public class AndroidtoJS implements QrCodeScanInter, CityPickerResultListener {
      */
     @JavascriptInterface
     public void IDCard_reverseSide(String value) {
-        if (BaseUnits.getInstance().checkPermission(CardContentActivity.getInstance(), Manifest.permission.CAMERA)) {
-            Intent intent = new Intent(CardContentActivity.getInstance(), CaptureActivity.class);
+        if (BaseUnits.getInstance().checkPermission(mContext, Manifest.permission.CAMERA)) {
+            Intent intent = new Intent(mContext, CaptureActivity.class);
             intent.putExtra("is_front", false);
             intent.putExtra("callback", value);
-            CardContentActivity.getInstance().startActivityForResult(intent, Request.StartActivityRspCode.SCAN_ID_CARD);
+            mContext.startActivityForResult(intent, Request.StartActivityRspCode.SCAN_ID_CARD);
         } else {
-            ActivityCompat.requestPermissions(CardContentActivity.getInstance(),
+            ActivityCompat.requestPermissions(mContext,
                     new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA);
         }
     }
@@ -636,20 +640,5 @@ public class AndroidtoJS implements QrCodeScanInter, CityPickerResultListener {
         }
     }
 
-    @Override
-    public void getQrCodeScanResult(String result) {
-
-    }
-
-    @Override
-    public void getQrCodeScanResult(String callBack, String result) {
-        Log.e(TAG, result);
-        sendCallBack(callBack, "200", "success", result);
-    }
-
-    @Override
-    public void getCityPickerResultListener(String callBack, JSONObject result) {
-        sendCallBackJson(callBack, "200", "success", result);
-    }
 }
 

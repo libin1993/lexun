@@ -135,4 +135,7 @@ dependencies {
     //极光推送
     implementation 'cn.jiguang.sdk:jpush:3.5.4'
     implementation 'cn.jiguang.sdk:jcore:2.2.4'
+
+    //eventbus
+    implementation 'org.greenrobot:eventbus:3.1.1'
 }
