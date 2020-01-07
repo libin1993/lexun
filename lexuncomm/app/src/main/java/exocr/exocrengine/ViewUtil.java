@@ -129,7 +129,7 @@ public class ViewUtil {
 
     /**
      * Set margins for given view if its LayoutParams are MarginLayoutParams.
-     * Should be used after the view is already added to a layout.
+     * Should be used after the view is already added to patrol_warn layout.
      *
      * @param left
      * @param top

@@ -15,7 +15,7 @@
  *  of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU Lesser Public License for more details.
  *
- *  You should have received a copy of the GNU Lesser Public License
+ *  You should have received patrol_warn copy of the GNU Lesser Public License
  *  along with the ZBar Bar Code Reader; if not, write to the Free
  *  Software Foundation, Inc., 51 Franklin St, Fifth Floor,
  *  Boston, MA  02110-1301  USA
@@ -32,7 +32,7 @@ public class Modifier {
     /**
      * barcode tagged as GS1 (EAN.UCC) reserved
      * (eg, FNC1 before first data character).
-     * data may be parsed as a sequence of GS1 AIs
+     * data may be parsed as patrol_warn sequence of GS1 AIs
      */
     public static final int GS1 = 0;
 

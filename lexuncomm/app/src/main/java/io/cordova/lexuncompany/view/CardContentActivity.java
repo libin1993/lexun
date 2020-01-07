@@ -355,6 +355,7 @@ public class CardContentActivity extends BaseActivity implements AndroidToJSCall
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             webSettings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
         }
+
         mBinding.webView.setWebChromeClient(new WebChromeClient() {
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
@@ -374,10 +375,6 @@ public class CardContentActivity extends BaseActivity implements AndroidToJSCall
                 super.onGeolocationPermissionsShowPrompt(origin, callback);
             }
 
-            @Override
-            public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
-                return super.onJsAlert(view, url, message, result);
-            }
         });
 
         mBinding.webView.setWebViewClient(new WebViewClient() {
@@ -399,13 +396,11 @@ public class CardContentActivity extends BaseActivity implements AndroidToJSCall
                 return true;
             }
 
-
         });
 
         androidtoJS = new AndroidtoJS(this,this);
         mBinding.webView.addJavascriptInterface(androidtoJS, "NativeForJSUnits");
         mBinding.webView.loadUrl(App.LexunCard.CardUrl);
-
 
     }
 
@@ -599,9 +594,13 @@ public class CardContentActivity extends BaseActivity implements AndroidToJSCall
                         value.put("address", idCardBean.getAddress());
                         value.put("IDNum", idCardBean.getNumber());
                         value.put("nation", idCardBean.getNation());
+                        value.put("frontimg",  Base64.encode(ImageUtils.
+                                getInstance().image2byte(idCardBean.getPath())));
                     } else {
                         value.put("issue", idCardBean.getPolice());
                         value.put("valid", idCardBean.getDate());
+                        value.put("backimg",  Base64.encode(ImageUtils.
+                                getInstance().image2byte(idCardBean.getPath())));
                     }
 
                     jsonObject.put("status", "200");

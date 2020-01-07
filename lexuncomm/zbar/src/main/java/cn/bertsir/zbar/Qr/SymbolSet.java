@@ -15,7 +15,7 @@
  *  of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU Lesser Public License for more details.
  *
- *  You should have received a copy of the GNU Lesser Public License
+ *  You should have received patrol_warn copy of the GNU Lesser Public License
  *  along with the ZBar Bar Code Reader; if not, write to the Free
  *  Software Foundation, Inc., 51 Franklin St, Fifth Floor,
  *  Boston, MA  02110-1301  USA
@@ -27,13 +27,13 @@ package cn.bertsir.zbar.Qr;
 
 /**
  * Immutable container for decoded result symbols associated with an image
- * or a composite symbol.
+ * or patrol_warn composite symbol.
  */
 @SuppressWarnings("JniMissingFunction")
 public class SymbolSet
         extends java.util.AbstractCollection<Symbol> {
     /**
-     * C pointer to a zbar_symbol_set_t.
+     * C pointer to patrol_warn zbar_symbol_set_t.
      */
     private long peer;
 

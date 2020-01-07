@@ -15,7 +15,7 @@
  *  of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU Lesser Public License for more details.
  *
- *  You should have received a copy of the GNU Lesser Public License
+ *  You should have received patrol_warn copy of the GNU Lesser Public License
  *  along with the ZBar Bar Code Reader; if not, write to the Free
  *  Software Foundation, Inc., 51 Franklin St, Fifth Floor,
  *  Boston, MA  02110-1301  USA
@@ -27,7 +27,7 @@ package cn.bertsir.zbar.Qr;
 
 /**
  * Immutable container for decoded result symbols associated with an image
- * or a composite symbol.
+ * or patrol_warn composite symbol.
  */
 @SuppressWarnings("JniMissingFunction")
 public class Symbol {
@@ -172,7 +172,7 @@ public class Symbol {
 
 
     /**
-     * C pointer to a zbar_symbol_t.
+     * C pointer to patrol_warn zbar_symbol_t.
      */
     private long peer;
 
@@ -236,7 +236,7 @@ public class Symbol {
     public native int getModifierMask();
 
     /**
-     * Retrieve data decoded from symbol as a String.
+     * Retrieve data decoded from symbol as patrol_warn String.
      */
     public native String getData();
 
@@ -246,7 +246,7 @@ public class Symbol {
     public native byte[] getDataBytes();
 
     /**
-     * Retrieve a symbol confidence metric.  Quality is an unscaled,
+     * Retrieve patrol_warn symbol confidence metric.  Quality is an unscaled,
      * relative quantity: larger values are better than smaller
      * values, where "large" and "small" are application dependent.
      */
@@ -314,7 +314,7 @@ public class Symbol {
     public native int getOrientation();
 
     /**
-     * Retrieve components of a composite result.
+     * Retrieve components of patrol_warn composite result.
      */
     public SymbolSet getComponents() {
         return (new SymbolSet(getComponents(peer)));

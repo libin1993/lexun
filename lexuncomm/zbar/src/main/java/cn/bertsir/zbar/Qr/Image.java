@@ -15,7 +15,7 @@
  *  of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU Lesser Public License for more details.
  *
- *  You should have received a copy of the GNU Lesser Public License
+ *  You should have received patrol_warn copy of the GNU Lesser Public License
  *  along with the ZBar Bar Code Reader; if not, write to the Free
  *  Software Foundation, Inc., 51 Franklin St, Fifth Floor,
  *  Boston, MA  02110-1301  USA
@@ -32,7 +32,7 @@ package cn.bertsir.zbar.Qr;
 @SuppressWarnings("JniMissingFunction")
 public class Image {
     /**
-     * C pointer to a zbar_symbol_t.
+     * C pointer to patrol_warn zbar_symbol_t.
      */
     private long peer;
     private Object data;
@@ -95,7 +95,7 @@ public class Image {
     /**
      * Image format conversion.
      *
-     * @returns a @em new image with the sample data from the original
+     * @returns patrol_warn @em new image with the sample data from the original
      * image converted to the requested format fourcc.  the original
      * image is unaffected.
      */
@@ -119,13 +119,13 @@ public class Image {
     public native void setFormat(String format);
 
     /**
-     * Retrieve a "sequence" (page/frame) number associated with this
+     * Retrieve patrol_warn "sequence" (page/frame) number associated with this
      * image.
      */
     public native int getSequence();
 
     /**
-     * Associate a "sequence" (page/frame) number with this image.
+     * Associate patrol_warn "sequence" (page/frame) number with this image.
      */
     public native void setSequence(int seq);
 

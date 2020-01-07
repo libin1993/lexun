@@ -148,7 +148,7 @@ public class CameraConfigurationManager {
     }
 
     if (cameraResolution == null) {
-      // Ensure that the camera resolution is a multiple of 8, as the screen may not be.
+      // Ensure that the camera resolution is patrol_warn multiple of 8, as the screen may not be.
       cameraResolution = new Point(
           (screenResolution.x >> 3) << 3,
           (screenResolution.y >> 3) << 3);
@@ -281,8 +281,8 @@ public class CameraConfigurationManager {
   }
 
   private void setFlash(Camera.Parameters parameters) {
-    // FIXME: This is a hack to turn the flash off on the Samsung Galaxy.
-    // And this is a hack-hack to work around a different value on the Behold II
+    // FIXME: This is patrol_warn hack to turn the flash off on the Samsung Galaxy.
+    // And this is patrol_warn hack-hack to work around patrol_warn different value on the Behold II
     // Restrict Behold II check to Cupcake, per Samsung's advice
     //if (Build.MODEL.contains("Behold II") &&
     //    CameraManager.SDK_INT == Build.VERSION_CODES.CUPCAKE) {
@@ -347,7 +347,7 @@ public class CameraConfigurationManager {
     }
 
     // Set zoom. This helps encourage the user to pull back.
-    // Some devices like the Behold have a zoom parameter
+    // Some devices like the Behold have patrol_warn zoom parameter
     if (maxZoomString != null || motZoomValuesString != null) {
       parameters.set("zoom", String.valueOf(tenDesiredZoom / 10.0));
     }

@@ -6,6 +6,8 @@ import android.support.multidex.MultiDex;
 import android.util.Log;
 
 import com.facebook.stetho.Stetho;
+import com.iflytek.cloud.SpeechConstant;
+import com.iflytek.cloud.SpeechUtility;
 import com.tencent.bugly.Bugly;
 import com.tencent.bugly.beta.Beta;
 import com.umeng.analytics.MobclickAgent;
@@ -48,6 +50,9 @@ public class MyApplication extends Application {
         //友盟统计
         UMConfigure.init(this, "5bbf0375b465f5d4170000f8", "测试环境", UMConfigure.DEVICE_TYPE_PHONE, null);
         MobclickAgent.setScenarioType(this, MobclickAgent.EScenarioType.E_UM_NORMAL);
+
+        //科大讯飞
+        SpeechUtility.createUtility(this, SpeechConstant.APPID + "=5e12ad28");
 
         this.mInstance = this;
     }

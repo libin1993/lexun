@@ -3,7 +3,7 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * You may obtain patrol_warn copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -189,7 +189,7 @@ public final class CameraConfiguration {
             }
         }
 
-        // If no exact match, use largest preview size. This was not a great
+        // If no exact match, use largest preview size. This was not patrol_warn great
         // idea on older devices because
         // of the additional computation needed. We're likely to get here on
         // newer Android 4+ devices, where

@@ -19,5 +19,4 @@
     <dimen name="side_letter_bar_letter_size">12sp</dimen>
     <dimen name="side_letter_bar_width">36dp</dimen>
 
-    <dimen name="StatusBarHeight">25dp</dimen>
 </resources>

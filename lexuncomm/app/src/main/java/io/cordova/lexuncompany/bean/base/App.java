@@ -47,13 +47,13 @@ public class App {
 
     public static class LexunCard {
         //研发环境
-//        public static final String CardUrl = "http://183.129.130.119:12010/";
-//        public static final String BUGLY_APPID ="b6722d0470";  //bugly
+        public static final String CardUrl = "http://183.129.130.119:12010/";
+        public static final String BUGLY_APPID ="b6722d0470";  //bugly
 
 
         //生产环境
-        public static final String CardUrl = "http://lexun.yikahui.net/";
-        public static final String BUGLY_APPID = "026a35dd56";  // bugly
+//        public static final String CardUrl = "http://lexun.yikahui.net/";
+//        public static final String BUGLY_APPID = "026a35dd56";  // bugly
 
 
         //测试环境

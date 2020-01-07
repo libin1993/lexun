@@ -1,16 +1,12 @@
 package io.cordova.lexuncompany.units;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.Vibrator;
 import android.support.v4.app.ActivityCompat;
 import android.text.TextUtils;
 import android.util.Log;
@@ -20,11 +16,6 @@ import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
-import com.baidu.location.BDAbstractLocationListener;
-import com.baidu.location.BDLocation;
-import com.baidu.location.LocationClient;
-import com.baidu.location.LocationClientOption;
-import com.facebook.stetho.common.LogUtil;
 import com.tencent.bugly.beta.Beta;
 
 import org.json.JSONException;
@@ -36,11 +27,10 @@ import exocr.exocrengine.CaptureActivity;
 import io.cordova.lexuncompany.R;
 import io.cordova.lexuncompany.application.MyApplication;
 import io.cordova.lexuncompany.bean.base.Request;
-import io.cordova.lexuncompany.inter.QrCodeScanInter;
 import io.cordova.lexuncompany.view.CardContentActivity;
-import io.cordova.lexuncompany.inter.CityPickerResultListener;
 import io.cordova.lexuncompany.view.ScanQRCodeActivity;
 
+import static android.content.Context.VIBRATOR_SERVICE;
 import static cn.bertsir.zbar.QrConfig.REQUEST_CAMERA;
 
 
@@ -68,8 +58,7 @@ public class AndroidtoJS {
     private CardContentActivity mContext;
 
 
-
-    public AndroidtoJS(Context context,AndroidToJSCallBack callBack) {
+    public AndroidtoJS(Context context, AndroidToJSCallBack callBack) {
         mContext = (CardContentActivity) context;
         this.mCallBack = callBack;
     }
@@ -112,7 +101,7 @@ public class AndroidtoJS {
      */
     @JavascriptInterface
     public void getDeviceId(String callBack) {
-        Log.d(TAG, "getDeviceId: "+callBack);
+        Log.d(TAG, "getDeviceId: " + callBack);
         sendCallBack(callBack, "200", "success", BaseUnits.getInstance().getPhoneKey());
     }
 
@@ -270,7 +259,7 @@ public class AndroidtoJS {
      */
     @JavascriptInterface
     public void finish() {
-        if (mContext!= null) {
+        if (mContext != null) {
             mContext.finish();
         }
     }
@@ -333,7 +322,7 @@ public class AndroidtoJS {
      */
     @JavascriptInterface
     public void getBaiduCoordinate(String callBack) {
-        Log.d(TAG, "高德定位: "+callBack);
+        Log.d(TAG, "高德定位: " + callBack);
         if (mLocationClient1 == null) {
             mLocationClient1 = new AMapLocationClient(MyApplication.getInstance());
             AMapLocationClientOption mLocationOption = new AMapLocationClientOption();
@@ -425,7 +414,7 @@ public class AndroidtoJS {
                     if (aMapLocation != null && aMapLocation.getLatitude() != 0 && aMapLocation.getLongitude() != 0) {
 
                         sendCallBack(callBack, "200", "success", aMapLocation.getLatitude() + "," + aMapLocation.getLongitude());
-                        Log.d(TAG, "onLocationChanged: "+aMapLocation.getLatitude() + "," + aMapLocation.getLongitude());
+                        Log.d(TAG, "onLocationChanged: " + aMapLocation.getLatitude() + "," + aMapLocation.getLongitude());
                     }
 
                 }
@@ -435,8 +424,6 @@ public class AndroidtoJS {
             mLocationClient.startLocation();
         }
     }
-
-
 
 
     /**
@@ -600,10 +587,39 @@ public class AndroidtoJS {
      */
     @JavascriptInterface
     public void textToSpeech(String value) {
-        Log.d("libin", "textToSpeech: "+value);
+        Log.d("libin", value);
         try {
             JSONObject jsonObject = new JSONObject(value);
             SpeechCompoundUnits.getInstance().speakText(jsonObject.getString("value"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 播放语音
+     *
+     * @param value
+     */
+    @JavascriptInterface
+    public void LXPlayAudio(String value) {
+        Log.d("libin",  value);
+        try {
+            JSONObject jsonObject = new JSONObject(value);
+            int type = jsonObject.getInt("type");
+            switch (type) {
+                case 1:
+                    MediaUtils.getInstance().playAudio(R.raw.patrol_warn);
+                    break;
+                case 2:
+                    MediaUtils.getInstance().playAudio(R.raw.patrol_finish);
+                    break;
+            }
+
+            Vibrator vibrator = (Vibrator) mContext.getSystemService(VIBRATOR_SERVICE);
+            if (vibrator != null) {
+                vibrator.vibrate(2000);
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
