@@ -1,7 +1,6 @@
 package io.cordova.lexuncompany.view;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -16,12 +15,12 @@ import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.graphics.Color;
 import android.net.Uri;
+import android.net.http.SslError;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -31,6 +30,7 @@ import android.view.animation.AnimationUtils;
 import android.webkit.GeolocationPermissions;
 import android.webkit.JavascriptInterface;
 import android.webkit.JsResult;
+import android.webkit.SslErrorHandler;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -54,6 +54,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Random;
+
 import cn.jpush.android.api.JPushInterface;
 import io.cordova.lexuncompany.R;
 import io.cordova.lexuncompany.bean.IDCardBean;
@@ -73,7 +74,6 @@ import io.cordova.lexuncompany.units.FormatUtils;
 import io.cordova.lexuncompany.units.ImageUtils;
 import io.cordova.lexuncompany.units.LogUtils;
 import io.cordova.lexuncompany.units.PermissionUtils;
-import io.cordova.lexuncompany.units.ViewUnits;
 
 import static io.cordova.lexuncompany.bean.base.Request.Permissions.REQUEST_ALL_PERMISSIONS;
 
@@ -85,7 +85,6 @@ import static io.cordova.lexuncompany.bean.base.Request.Permissions.REQUEST_ALL_
 
 public class CardContentActivity extends BaseActivity implements AndroidToJSCallBack {
     private static final String TAG = "libin";
-
     private ActivityCardContentBinding mBinding;
 
     private GetImageListener mListener; //获取图片监听类
@@ -93,17 +92,14 @@ public class CardContentActivity extends BaseActivity implements AndroidToJSCall
     private static boolean isFirstLoaded = true;  //标记是否为第一次加载
     private IntentFilter mFilter = new IntentFilter();
 
-
     //开启gps
     private AlertDialog alertDialog;
 
     private AndroidtoJS androidtoJS;
 
-
     private static final String NOTIFICATION_CHANNEL_NAME = "BackgroundLocation";
     public NotificationManager notificationManager = null;
     boolean isCreateChannel = false;
-
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -113,7 +109,6 @@ public class CardContentActivity extends BaseActivity implements AndroidToJSCall
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         AndroidBug5497Workaround.assistActivity(mBinding.getRoot());  //解决在沉浸式菜单栏中，软键盘不能顶起页面的bug
         date();  //每次打开APP都获取剪切板数据,检查是否有推广码
-        mInstance = this;
 
         mFilter.addAction(Request.Broadcast.RELOADURL);
         this.registerReceiver(mBroadcastReceiver, mFilter);
@@ -124,10 +119,9 @@ public class CardContentActivity extends BaseActivity implements AndroidToJSCall
 
         setListener();
 
-
         checkUpdate();
-    }
 
+    }
 
     /**
      * @return 定位前台通知
@@ -182,7 +176,7 @@ public class CardContentActivity extends BaseActivity implements AndroidToJSCall
         Beta.upgradeDialogLifecycleListener = new UILifecycleListener<UpgradeInfo>() {
             @Override
             public void onCreate(Context context, View view, UpgradeInfo upgradeInfo) {
-                Log.d("libin", "onResume111"+upgradeInfo.upgradeType);
+                Log.d("libin", "onResume111" + upgradeInfo.upgradeType);
                 // 注：可通过这个回调方式获取布局的控件，如果设置了id，可通过findViewById方式获取，如果设置了tag，可以通过findViewWithTag，具体参考下面例子:
 
                 // 通过id方式获取控件
@@ -193,7 +187,7 @@ public class CardContentActivity extends BaseActivity implements AndroidToJSCall
                 ivCancel.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (upgradeInfo.upgradeType == 2){
+                        if (upgradeInfo.upgradeType == 2) {
                             finish();
                             System.exit(0);
                             android.os.Process.killProcess(android.os.Process.myPid());
@@ -209,7 +203,6 @@ public class CardContentActivity extends BaseActivity implements AndroidToJSCall
 
             @Override
             public void onResume(Context context, View view, UpgradeInfo upgradeInfo) {
-
 
 
             }
@@ -233,6 +226,7 @@ public class CardContentActivity extends BaseActivity implements AndroidToJSCall
 
         Bugly.init(getApplicationContext(), App.LexunCard.BUGLY_APPID, false);
     }
+
 
 
     /**
@@ -270,6 +264,8 @@ public class CardContentActivity extends BaseActivity implements AndroidToJSCall
             e.printStackTrace();
         }
     }
+
+
 
     /**
      * 是否开启gps
@@ -326,7 +322,6 @@ public class CardContentActivity extends BaseActivity implements AndroidToJSCall
     @Override
     protected void onResume() {
         super.onResume();
-
         JPushInterface.setAlias(this, new Random().nextInt(900) + 100, BaseUnits.getInstance().getPhoneKey());
         isOpenGps();
 
@@ -343,7 +338,6 @@ public class CardContentActivity extends BaseActivity implements AndroidToJSCall
     }
 
 
-    @JavascriptInterface
     public void initView() {
         WebSettings webSettings = mBinding.webView.getSettings();
         webSettings.setJavaScriptEnabled(true);  //设置与JS交互权限
@@ -370,7 +364,6 @@ public class CardContentActivity extends BaseActivity implements AndroidToJSCall
                         isFirstLoaded = false;
                         mBinding.layoutLoading.startAnimation(AnimationUtils.loadAnimation(CardContentActivity.this, R.anim.layout_card_loading_close));
                         mBinding.layoutLoading.setVisibility(View.GONE);
-
                     }
                 }
             }
@@ -391,7 +384,7 @@ public class CardContentActivity extends BaseActivity implements AndroidToJSCall
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-
+                Log.d("libin", "shouldOverrideUrlLoading: "+url);
                 if (url == null) return false;
                 if (url.startsWith("http:") || url.startsWith("https:")) {
                     view.loadUrl(url);
@@ -405,11 +398,14 @@ public class CardContentActivity extends BaseActivity implements AndroidToJSCall
                 }
                 return true;
             }
+
+
         });
 
         androidtoJS = new AndroidtoJS(this,this);
         mBinding.webView.addJavascriptInterface(androidtoJS, "NativeForJSUnits");
         mBinding.webView.loadUrl(App.LexunCard.CardUrl);
+
 
     }
 
@@ -554,6 +550,7 @@ public class CardContentActivity extends BaseActivity implements AndroidToJSCall
         destroyWebView();
         mBinding = null;
         EventBus.getDefault().unregister(this);
+
         super.onDestroy();
 
     }
@@ -576,7 +573,6 @@ public class CardContentActivity extends BaseActivity implements AndroidToJSCall
             }
         }
     };
-
 
 
     @Override
@@ -603,11 +599,14 @@ public class CardContentActivity extends BaseActivity implements AndroidToJSCall
                         value.put("address", idCardBean.getAddress());
                         value.put("IDNum", idCardBean.getNumber());
                         value.put("nation", idCardBean.getNation());
+                        value.put("frontimg",  Base64.encode(ImageUtils.
+                                getInstance().image2byte(idCardBean.getPath())));
                     } else {
                         value.put("issue", idCardBean.getPolice());
                         value.put("valid", idCardBean.getDate());
+                        value.put("backimg",  Base64.encode(ImageUtils.
+                                getInstance().image2byte(idCardBean.getPath())));
                     }
-
                     jsonObject.put("status", "200");
                     jsonObject.put("msg", "success");
                     jsonObject.put("data", value);

@@ -58,9 +58,8 @@ android {
                 JPUSH_CHANNEL: "developer-default", //暂时填写默认值即可.
         ]
 
-
         ndk {
-            abiFilters "armeabi", "armeabi-v7a", "x86", "mips", "armeabi" , "mips64"
+            abiFilters "armeabi", "armeabi-v7a", "armeabi-v8a","x86","x86_64"
         }
     }
 

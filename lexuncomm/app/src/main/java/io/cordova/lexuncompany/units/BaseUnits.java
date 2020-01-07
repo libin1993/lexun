@@ -204,6 +204,7 @@ public class BaseUnits {
         return "";
     }
 
+
     /**
      * 判断某个Activity是否正在运行
      * @param activityClassName

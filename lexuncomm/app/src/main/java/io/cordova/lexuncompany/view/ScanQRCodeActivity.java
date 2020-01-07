@@ -37,6 +37,7 @@ import cn.bertsir.zbar.view.ScanView;
 import io.cordova.lexuncompany.R;
 import io.cordova.lexuncompany.bean.ScanResultBean;
 import io.cordova.lexuncompany.inter.QrCodeScanInter;
+import io.cordova.lexuncompany.units.LogUtils;
 import io.cordova.lexuncompany.units.ViewUnits;
 
 
@@ -121,13 +122,12 @@ public class ScanQRCodeActivity extends BaseActivity {
 
 
 
-
     private void scanResult(String result) {
         vibrate();
         Intent intent = new Intent();
         intent.putExtra("result", result);
         this.setResult(RESULT_OK, intent);
-        //如果QrCodeScan不为空，这执行相关回调，同时销毁对象，防止内存堆积
+
         if (!TextUtils.isEmpty(result)) {
             EventBus.getDefault().post(new ScanResultBean(mCallBack,result));
         }

@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import io.cordova.lexuncompany.R;
+import io.cordova.lexuncompany.units.LogUtils;
 
 
 /**
@@ -68,14 +69,14 @@ public class EXOCRDict {
         }
     }
 
-    public static boolean InitDict(Activity activity) {
+    public static boolean InitDict(Context context) {
 
          String name = "/zocr0.lib";
-         String path = activity.getCacheDir().getAbsolutePath();
+         String path = context.getCacheDir().getAbsolutePath();
          String pathname = path + name;
 
         // step1: 检测字典是否存在
-        boolean okFile = checkFile(activity, pathname);
+        boolean okFile = checkFile(context, pathname);
         if (!okFile) {
             clearDict();
             return false;
@@ -89,11 +90,13 @@ public class EXOCRDict {
         }
 
         // step3: 检测字典签名
-        boolean okSign = checkSign(activity);
+        boolean okSign = checkSign(context);
         if (!okSign) {
             clearDict();
         }
 
+
+        LogUtils.log("签名结果："+okSign);
         return okSign;
 
     }

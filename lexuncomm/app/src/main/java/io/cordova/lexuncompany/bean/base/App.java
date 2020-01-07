@@ -46,7 +46,6 @@ public class App {
     }
 
     public static class LexunCard {
-
         //测试环境
         public static final String CardUrl = "http://183.129.130.119:13146/";
         public static final String BUGLY_APPID = "02f471bea3";  // bugly

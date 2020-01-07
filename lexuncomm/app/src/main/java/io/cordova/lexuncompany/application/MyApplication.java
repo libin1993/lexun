@@ -2,10 +2,13 @@ package io.cordova.lexuncompany.application;
 
 import android.app.Application;
 import android.content.Context;
+import android.os.CountDownTimer;
 import android.support.multidex.MultiDex;
 import android.util.Log;
 
 import com.facebook.stetho.Stetho;
+import com.iflytek.cloud.SpeechConstant;
+import com.iflytek.cloud.SpeechUtility;
 import com.tencent.bugly.Bugly;
 import com.tencent.bugly.beta.Beta;
 import com.umeng.analytics.MobclickAgent;
@@ -15,6 +18,8 @@ import com.yanzhenjie.nohttp.NoHttp;
 import com.yanzhenjie.nohttp.URLConnectionNetworkExecutor;
 
 import cn.jpush.android.api.JPushInterface;
+import exocr.exocrengine.CaptureActivity;
+import exocr.exocrengine.EXOCRDict;
 import io.cordova.lexuncompany.bean.base.App;
 import io.cordova.lexuncompany.view.CardContentActivity;
 
@@ -41,15 +46,19 @@ public class MyApplication extends Application {
 
         Stetho.initializeWithDefaults(this);  //初始化Chrome查看Sqlite插件
 
-        //极光推送
-        JPushInterface.setDebugMode(true);
-        JPushInterface.init(this);
+//        //极光推送
+//        JPushInterface.setDebugMode(true);
+//        JPushInterface.init(this);
 
         //友盟统计
         UMConfigure.init(this, "5bbf0375b465f5d4170000f8", "测试环境", UMConfigure.DEVICE_TYPE_PHONE, null);
         MobclickAgent.setScenarioType(this, MobclickAgent.EScenarioType.E_UM_NORMAL);
 
-        mInstance = this;
+        //科大讯飞
+        SpeechUtility.createUtility(this, SpeechConstant.APPID + "=5e12ad28");
+
+
+        this.mInstance = this;
     }
 
     public static MyApplication getInstance() {

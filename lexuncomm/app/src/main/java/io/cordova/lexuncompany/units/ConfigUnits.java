@@ -22,7 +22,7 @@ public class ConfigUnits {
     private ConfigUnits() {
     }  //私有化构造方法
 
-    public static final ConfigUnits getInstance() {
+    public static ConfigUnits getInstance() {
         if (mInstances == null) {
             synchronized (ConfigUnits.class) {
                 if (mInstances == null) {

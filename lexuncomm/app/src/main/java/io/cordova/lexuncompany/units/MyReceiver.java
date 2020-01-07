@@ -25,7 +25,7 @@ import io.cordova.lexuncompany.view.CardContentActivity;
  * 2) 接收不到自定义消息
  */
 public class MyReceiver extends BroadcastReceiver {
-    private static final String TAG = "JIGUANG-Example";
+    private static final String TAG = "libin";
 
     @Override
     public void onReceive(Context context, Intent intent) {

@@ -47,7 +47,7 @@ import static cn.bertsir.zbar.QrConfig.REQUEST_CAMERA;
 /**
  * Created by JasonYao on 2018/9/3
  */
-public class AndroidtoJS{
+public class AndroidtoJS {
     private static final String TAG = "libin";
 
     //    //巡逻相关
@@ -64,6 +64,7 @@ public class AndroidtoJS{
 
     private AndroidToJSCallBack mCallBack;
 
+
     private CardContentActivity mContext;
 
 
@@ -72,7 +73,6 @@ public class AndroidtoJS{
         mContext = (CardContentActivity) context;
         this.mCallBack = callBack;
     }
-
 
 //    private LocationClient getBaiduLocationClient1(String callBack) {
 //        if (mBaiduOption1 == null) mBaiduOption1 = new LocationClientOption();
@@ -199,6 +199,7 @@ public class AndroidtoJS{
      */
     @JavascriptInterface
     public void qrScan(String callBack) {
+
         if (BaseUnits.getInstance().checkPermission(mContext, Manifest.permission.CAMERA)) {
             Intent intent = new Intent(MyApplication.getInstance().getBaseContext(), ScanQRCodeActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -269,7 +270,7 @@ public class AndroidtoJS{
      */
     @JavascriptInterface
     public void finish() {
-        if (mContext != null) {
+        if (mContext!= null) {
             mContext.finish();
         }
     }
@@ -405,7 +406,7 @@ public class AndroidtoJS{
      */
     @JavascriptInterface
     public void beginPatrol(String callBack) {
-        Log.d(TAG, "beginPatrol2: " + callBack);
+        Log.d(TAG, "beginPatrol: " + callBack);
         if (mLocationClient == null) {
             Log.d(TAG, "巡逻:13");
             mLocationClient = new AMapLocationClient(MyApplication.getInstance());
@@ -433,8 +434,6 @@ public class AndroidtoJS{
         } else if (!mLocationClient.isStarted()) {
             mLocationClient.startLocation();
         }
-
-
     }
 
 
@@ -452,6 +451,7 @@ public class AndroidtoJS{
             mLocationClient.stopLocation();
             mLocationClient = null;
         }
+
     }
 
 //
@@ -600,6 +600,7 @@ public class AndroidtoJS{
      */
     @JavascriptInterface
     public void textToSpeech(String value) {
+        Log.d("libin", "textToSpeech: "+value);
         try {
             JSONObject jsonObject = new JSONObject(value);
             SpeechCompoundUnits.getInstance().speakText(jsonObject.getString("value"));
