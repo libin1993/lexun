@@ -202,7 +202,7 @@ class CameraScanAnalysis implements Camera.PreviewCallback {
                         size.height, Symbol.cropX, Symbol.cropY, cropWidth, cropHeight, true);
                 if (source != null) {
                     BinaryBitmap bitmap;
-                    if (count % 6 < 3) {
+                    if (count % 4 < 2) {
                         count++;
                         bitmap = new BinaryBitmap(new HybridBinarizer(source));
                     } else {
@@ -339,7 +339,7 @@ class CameraScanAnalysis implements Camera.PreviewCallback {
         multiFormatReader.setHints(scanOption);
         if (source != null) {
             BinaryBitmap bitmap;
-            if (count % 6 < 3) {
+            if (count % 4 < 2) {
                 count++;
                 bitmap = new BinaryBitmap(new HybridBinarizer(source));
             } else {
