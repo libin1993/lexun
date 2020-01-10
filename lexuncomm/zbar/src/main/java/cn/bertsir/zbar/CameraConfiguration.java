@@ -182,9 +182,17 @@ public final class CameraConfiguration {
                 continue;
             }
 
-            if (maybeFlippedWidth == screenResolution.x && maybeFlippedHeight == screenResolution.y) {
+//            if (maybeFlippedWidth == screenResolution.x && maybeFlippedHeight == screenResolution.y) {
+//                Point exactPoint = new Point(realWidth, realHeight);
+//                Log.i(TAG, "Found preview size exactly matching screen size: " + exactPoint);
+//                return exactPoint;
+//            }
+
+            //zxing扫码近距离无法扫描
+            Log.d(TAG, "aaaaaaa: " + maybeFlippedWidth+","+screenResolution.x);
+            if (maybeFlippedWidth <1500){
                 Point exactPoint = new Point(realWidth, realHeight);
-                Log.i(TAG, "Found preview size exactly matching screen size: " + exactPoint);
+                Log.d(TAG, "Found preview size exactly matching screen size: " + exactPoint);
                 return exactPoint;
             }
         }
