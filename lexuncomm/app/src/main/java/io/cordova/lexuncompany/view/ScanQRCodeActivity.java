@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.graphics.Point;
+import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -11,6 +13,7 @@ import android.os.Vibrator;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
@@ -26,6 +29,8 @@ import org.greenrobot.eventbus.EventBus;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.bertsir.zbar.CameraConfiguration;
+import cn.bertsir.zbar.CameraManager;
 import cn.bertsir.zbar.CameraPreview;
 import cn.bertsir.zbar.Qr.ScanResult;
 import cn.bertsir.zbar.Qr.Symbol;
@@ -38,6 +43,7 @@ import io.cordova.lexuncompany.R;
 import io.cordova.lexuncompany.bean.ScanResultBean;
 import io.cordova.lexuncompany.inter.QrCodeScanInter;
 import io.cordova.lexuncompany.units.LogUtils;
+import io.cordova.lexuncompany.units.ScreenUtils;
 import io.cordova.lexuncompany.units.ViewUnits;
 
 
@@ -106,6 +112,20 @@ public class ScanQRCodeActivity extends BaseActivity {
         if (cpScan != null) {
             cpScan.setScanCallback(resultCallback);
             cpScan.start();
+
+            //CameraPreview设置宽高
+            CameraManager cameraManager = cpScan.getmCameraManager();
+            Camera camera = cameraManager.getmCamera();
+            Camera.Parameters parameters = camera.getParameters();
+            Point screenResolutionForCamera = new Point();
+            screenResolutionForCamera.x = ScreenUtils.getScreenHeight();
+            screenResolutionForCamera.y = ScreenUtils.getScreenWidth();
+            Point bestPreviewSizeValue = CameraConfiguration.findBestPreviewSizeValue(parameters, screenResolutionForCamera);
+            ViewGroup.LayoutParams layoutParams = cpScan.getLayoutParams();
+            layoutParams.width = ScreenUtils.getScreenWidth();
+            layoutParams.height =ScreenUtils.getScreenWidth() * bestPreviewSizeValue.x / bestPreviewSizeValue.y;
+            LogUtils.log("sss"+layoutParams.width+","+layoutParams.height);
+            cpScan.setLayoutParams(layoutParams);
         }
 
     }

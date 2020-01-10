@@ -60,7 +60,6 @@ public class App {
         public static final String CardUrl = "http://183.129.130.119:13131/";
         public static final String BUGLY_APPID = "cc5b9c4bdc";  // bugly
 
-
     }
 }
 

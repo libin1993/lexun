@@ -35,6 +35,10 @@ public final class CameraManager {
     private final CameraConfiguration mConfiguration;
     private Context context;
 
+    public Camera getmCamera() {
+        return mCamera;
+    }
+
     private Camera mCamera;
 
     public CameraManager(Context context) {
