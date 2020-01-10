@@ -29,7 +29,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:src="@drawable/shadow"
-                android:layout_weight="1"
+                android:layout_weight="0.8"
                 android:scaleType="fitXY"
                 />
 

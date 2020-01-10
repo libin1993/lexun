@@ -122,7 +122,7 @@ public final class CameraConfiguration {
      * @param screenResolution screen resolution.
      * @return {@link Point}.
      */
-    private Point findBestPreviewSizeValue(Camera.Parameters parameters, Point screenResolution) {
+    public static Point findBestPreviewSizeValue(Camera.Parameters parameters, Point screenResolution) {
         List<Camera.Size> rawSupportedSizes = parameters.getSupportedPreviewSizes();
         if (rawSupportedSizes == null) {
             Log.w(TAG, "Device returned no supported preview sizes; using default");

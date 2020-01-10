@@ -30,6 +30,10 @@ import android.widget.Toast;
  */
 public class CameraPreview extends FrameLayout implements SurfaceHolder.Callback {
 
+    public CameraManager getmCameraManager() {
+        return mCameraManager;
+    }
+
     private CameraManager mCameraManager;
     private CameraScanAnalysis mPreviewCallback;
     private SurfaceView mSurfaceView;
