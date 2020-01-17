@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Point;
 import android.hardware.Camera;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -72,8 +73,9 @@ public class ScanQRCodeActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        Symbol.scanType =  QrConfig.TYPE_CUSTOM;
+        Symbol.scanType = QrConfig.TYPE_CUSTOM;
         Symbol.doubleEngine = true;
+
         setContentView(R.layout.activity_scan_qrcode);
         ButterKnife.bind(this);
         init();
@@ -123,8 +125,8 @@ public class ScanQRCodeActivity extends BaseActivity {
             Point bestPreviewSizeValue = CameraConfiguration.findBestPreviewSizeValue(parameters, screenResolutionForCamera);
             ViewGroup.LayoutParams layoutParams = cpScan.getLayoutParams();
             layoutParams.width = ScreenUtils.getScreenWidth();
-            layoutParams.height =ScreenUtils.getScreenWidth() * bestPreviewSizeValue.x / bestPreviewSizeValue.y;
-            LogUtils.log("sss"+layoutParams.width+","+layoutParams.height);
+            layoutParams.height = ScreenUtils.getScreenWidth() * bestPreviewSizeValue.x / bestPreviewSizeValue.y;
+            LogUtils.log("sss" + layoutParams.width + "," + layoutParams.height);
             cpScan.setLayoutParams(layoutParams);
         }
 
@@ -140,7 +142,6 @@ public class ScanQRCodeActivity extends BaseActivity {
     };
 
 
-
     private void scanResult(String result) {
         vibrate();
         Intent intent = new Intent();
@@ -148,7 +149,7 @@ public class ScanQRCodeActivity extends BaseActivity {
         this.setResult(RESULT_OK, intent);
 
         if (!TextUtils.isEmpty(result)) {
-            EventBus.getDefault().post(new ScanResultBean(mCallBack,result));
+            EventBus.getDefault().post(new ScanResultBean(mCallBack, result));
         }
         finish();
     }
