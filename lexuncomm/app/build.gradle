@@ -124,7 +124,7 @@ dependencies {
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
     implementation 'com.amap.api:location:latest.integration'
     //图片选择
-    implementation 'com.github.LuckSiege.PictureSelector:picture_library:v2.2.4'
+//    implementation 'com.github.LuckSiege.PictureSelector:picture_library:v2.2.4'
     implementation project(path: ':zbar')
     implementation files('libs/Msc.jar')
 
@@ -135,4 +135,5 @@ dependencies {
     //eventbus
     implementation 'org.greenrobot:eventbus:3.1.1'
     implementation 'com.google.zxing:core:3.3.3'
+    implementation project(path: ':picture_library')
 }
